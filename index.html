@@ -224,6 +224,38 @@ dialog::backdrop{background:rgba(8,14,11,.55)}
 .card .r .cap{font-size:16px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#8A6A22}
 .card .r img{width:132px;height:132px;image-rendering:pixelated}
 .card .r small{font-size:13px;color:#4A5A50;line-height:1.4}
+.card .rt,.card .rq{display:flex;flex-direction:column;align-items:center;gap:12px}
+/* vertical social formats: square 1080x1080, portrait 1080x1350, story 1080x1920 */
+.card.sq{width:1080px;height:1080px}.card.pt{width:1080px;height:1350px}.card.st{width:1080px;height:1920px}
+.card.v{grid-template-columns:1fr;grid-template-rows:1fr auto}
+.card.v .l{padding:72px 72px 48px}
+.card.v .eb{font-size:22px}
+.card.v .ar{font-size:34px}
+.card.v .kphoto{position:static;width:230px;height:230px;margin-top:40px;border-width:6px}
+.card.v .nm{font-size:76px;max-width:none;margin-top:32px}
+.card.v .in{font-size:28px;max-width:none}
+.card.v .num b{font-size:58px}
+.card.v .num span{font-size:19px}
+.card.v .r{flex-direction:row;justify-content:space-between;align-items:center;padding:40px 72px}
+.card.v .rt{align-items:flex-start;text-align:left}
+.card.v .r .big{font-size:88px}
+.card.v .r .big br{display:none}
+.card.v .r .cap{font-size:18px}
+.card.v .r img{width:170px;height:170px}
+.card.v .r small{font-size:15px}
+.card.sq .kphoto{width:190px;height:190px;margin-top:28px}
+.card.sq .nm{font-size:68px;margin-top:24px}
+.card.st .l{padding-top:250px}
+.card.st .kphoto{width:300px;height:300px;margin-top:70px}
+.card.st .nm{font-size:92px;margin-top:44px}
+.card.st .in{font-size:32px}
+.card.st .num b{font-size:66px}
+.card.st .r{margin-bottom:250px}
+.card.st .nums{margin-bottom:30px}
+.sizes{display:flex;gap:6px;flex-wrap:wrap}
+.sizes button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer;color:var(--ink)}
+.sizes button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.sizes button small{display:block;font-size:11px;opacity:.8}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -302,6 +334,7 @@ dialog::backdrop{background:rgba(8,14,11,.55)}
       <button class="link" id="photoRm" type="button" hidden data-i="rmPhoto"></button>
       <span class="note" data-i="photoNote"></span>
     </div>
+    <div class="sizes" id="sizes" role="group" hidden></div>
     <div class="pv" id="pv"></div>
     <div class="facts" id="facts"></div>
     <div class="actions">
@@ -415,6 +448,7 @@ const T = {
   instIntro:(n,top)=>`${n} Saudi institutions have at least one researcher in either list. ${top.inst} leads with ${top.n} researchers. Select an institution to see its researchers.`,
   lgBoth:'In the career-long list',lgOne:'Single-year {Y} list only',resShort:'researchers',showAll:n=>`Show all ${n} institutions`,
   pCert:'Certificate',pCard:'Share image',
+  sz_land:'X · LinkedIn · Facebook',sz_sq:'Instagram · square post',sz_pt:'Instagram portrait',sz_st:'Story · WhatsApp status',
   addPhoto:'Add your photo',rmPhoto:'Remove photo',photoNote:'Optional. Your photo is placed on the certificate and share image. It stays on your device and is never uploaded.',photoBad:'Please choose a JPG, PNG or WebP image under 15 MB.',
   dl:'Download certificate (PDF)',dlJpg:'Download certificate (JPEG)',dlCard:'Download share image',copy:'Copy record link',copied:'Link copied.',copyFail:'Copy the link below.',
   making:'Preparing file…',saved:'Saved.',declined:'Download cancelled.',
@@ -452,6 +486,7 @@ const T = {
   instIntro:(n,top)=>`لدى ${n.toLocaleString('ar-SA')} مؤسسة سعودية باحث واحد على الأقل في إحدى القائمتين، وتتصدرها ${top.inst} بعدد ${top.n.toLocaleString('ar-SA')} باحثاً. اختر مؤسسة لعرض باحثيها.`,
   lgBoth:'في قائمة المسيرة البحثية',lgOne:'في قائمة {Y} فقط',resShort:'باحث',showAll:n=>`عرض جميع المؤسسات (${n.toLocaleString('ar-SA')})`,
   pCert:'الشهادة',pCard:'صورة للمشاركة',
+  sz_land:'إكس · لينكدإن · فيسبوك',sz_sq:'إنستغرام · منشور مربع',sz_pt:'إنستغرام · طولي',sz_st:'قصة · حالة واتساب',
   addPhoto:'أضف صورتك',rmPhoto:'إزالة الصورة',photoNote:'اختياري. تظهر صورتك على الشهادة وصورة المشاركة، وتبقى على جهازك ولا تُرفع إلى أي خادم.',photoBad:'اختر صورة بصيغة JPG أو PNG أو WebP بحجم أقل من 15 ميغابايت.',
   dl:'تحميل الشهادة (PDF)',dlJpg:'تحميل الشهادة (JPEG)',dlCard:'تحميل صورة المشاركة',copy:'نسخ رابط السجل',copied:'تم نسخ الرابط.',copyFail:'انسخ الرابط أدناه.',
   making:'جارٍ إعداد الملف…',saved:'تم الحفظ.',declined:'تم إلغاء التحميل.',
@@ -639,12 +674,12 @@ function cardHTML(p){
   const r = p.career && (!p.single || p.career.rank <= p.single.rank) ? p.career : p.single;
   const listLbl = r===p.career ? 'Career-long' : String(V.cy);
   const qr = qrData(recordUrl(p));
-  return `<div class="card"><div class="pat"></div>
+  return `<div class="card ${cardSize}${cardSize==='land'?'':' v'}"><div class="pat"></div>
     <div class="l">
       <div class="eb">World’s top-cited scientists · ${yr}</div>
       <div class="ar" dir="rtl">ضمن قائمة أفضل 2% من العلماء في العالم</div>
       ${photoOf(p) ? `<div class="kphoto" style="background-image:url('${photoOf(p)}')"></div>` : ''}
-      <div class="nm"${photoOf(p)?' style="max-width:560px"':''}>${esc(p.display)}</div>
+      <div class="nm"${photoOf(p)&&cardSize==='land'?' style="max-width:560px"':''}>${esc(p.display)}</div>
       <div class="in">${esc(p.inst)}, Saudi Arabia</div>
       <div class="nums">
         <div class="num"><b>#${fmt(r.rank)}</b><span>World rank · ${listLbl}</span></div>
@@ -652,9 +687,9 @@ function cardHTML(p){
       </div>
     </div>
     <div class="r">
-      <div class="cap">Stanford–Elsevier list</div>
-      <div class="big">Top<br>2%</div>
-      ${qr ? `<img src="${qr}" alt=""><small>Scan to verify<br>${p.id}</small>` : `<small>Version ${V.v} · ${V.month}<br>${p.id}</small>`}
+      <div class="rt"><div class="cap">Stanford–Elsevier list</div>
+      <div class="big">Top<br> 2%</div></div>
+      <div class="rq">${qr ? `<img src="${qr}" alt=""><small>Scan to verify<br>${p.id}</small>` : `<small>Version ${V.v} · ${V.month}<br>${p.id}</small>`}</div>
     </div></div>`;
 }
 function facts(p){
@@ -686,13 +721,20 @@ function loadPhoto(file){
     img.src=url;
   });
 }
-const DIM = {cert:[1123,794], card:[1200,630]};
+const SIZES = {land:[1200,630], sq:[1080,1080], pt:[1080,1350], st:[1080,1920]};
+let cardSize = 'land';
+const dims = () => mode==='cert' ? [1123,794] : SIZES[cardSize];
+function renderSizes(){
+  const el=$('sizes'); el.hidden = mode!=='card';
+  el.innerHTML = Object.keys(SIZES).map(k=>`<button type="button" data-size="${k}" aria-pressed="${k===cardSize}">${t('sz_'+k)}<small>${SIZES[k][0]}×${SIZES[k][1]}</small></button>`).join('');
+}
+$('sizes').addEventListener('click', e => { const b=e.target.closest('button[data-size]'); if(b){ cardSize=b.dataset.size; drawPreview(); } });
 function fitPreview(){
   const pv=$('pv'), c=pv.firstElementChild; if(!c) return;
-  const [w,h] = DIM[mode], s = pv.clientWidth/w; c.style.transform=`scale(${s})`; pv.style.height=(h*s)+'px';
+  const [w,h] = dims(), s = Math.min(pv.clientWidth/w, mode==='cert' ? 9 : 560/h); c.style.transform=`scale(${s})`; c.style.marginLeft = Math.max(0,(pv.clientWidth - w*s)/2)+'px'; pv.style.height=(h*s)+'px';
 }
 new ResizeObserver(fitPreview).observe($('pv'));
-function drawPreview(){ if(!current) return; $('photoRm').hidden=!photoOf(current); $('pv').innerHTML = mode==='cert' ? certHTML(current) : cardHTML(current); $('sCert').setAttribute('aria-pressed',mode==='cert'); $('sCard').setAttribute('aria-pressed',mode==='card'); fitPreview(); }
+function drawPreview(){ if(!current) return; renderSizes(); $('photoRm').hidden=!photoOf(current); $('pv').innerHTML = mode==='cert' ? certHTML(current) : cardHTML(current); $('sCert').setAttribute('aria-pressed',mode==='cert'); $('sCard').setAttribute('aria-pressed',mode==='card'); fitPreview(); }
 function openPerson(p, keep){
   current=p; renderEditions(p); $('dName').textContent=p.display; $('facts').innerHTML=facts(p); $('status').textContent=''; $('linkbox').hidden=true;
   drawPreview();
@@ -717,11 +759,11 @@ $('dlg').addEventListener('close', ()=>{
   const row = p && document.querySelector(`.row[data-id="${p.id}"]`); if(row){ row.focus(); }
 });
 
-async function render2canvas(html,w,h){
+async function render2canvas(html,w,h,scale=2){
   const host=document.createElement('div');
   host.style.cssText=`position:fixed;left:-30000px;top:0;width:${w}px;height:${h}px`;
   host.innerHTML=html; document.body.appendChild(host);
-  try{ await document.fonts.ready; return await html2canvas(host.firstElementChild,{scale:2,backgroundColor:null,logging:false}); }
+  try{ await document.fonts.ready; return await html2canvas(host.firstElementChild,{scale,backgroundColor:null,logging:false}); }
   finally{ host.remove(); }
 }
 async function offer(filename, blob){
@@ -754,9 +796,9 @@ $('dlJpg').onclick = () => current && busy($('dlJpg'), async () => {
   return offer(`Certificate_${asciiName(p.display)}_Top2pct_V${p.v}_${VERS[p.v].cy}.jpg`, blob);
 });
 $('dlCard').onclick = () => current && busy($('dlCard'), async () => {
-  const p=current, canvas=await render2canvas(cardHTML(p),1200,630);
+  const p=current, [w,h]=SIZES[cardSize], canvas=await render2canvas(cardHTML(p),w,h,1);
   const blob=await new Promise(r=>canvas.toBlob(r,'image/png'));
-  return offer(`Top2pct_V${p.v}_${VERS[p.v].cy}_${asciiName(p.display)}.png`, blob);
+  return offer(`Top2pct_V${p.v}_${VERS[p.v].cy}_${asciiName(p.display)}_${w}x${h}.png`, blob);
 });
 $('copy').onclick = async () => {
   if(!current) return; const url=recordUrl(current);
