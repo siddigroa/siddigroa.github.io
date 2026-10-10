@@ -256,6 +256,43 @@ dialog::backdrop{background:rgba(8,14,11,.55)}
 .sizes button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer;color:var(--ink)}
 .sizes button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .sizes button small{display:block;font-size:11px;opacity:.8}
+
+/* ask-the-data panel */
+.ask-fab{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom,0px));inset-inline-end:18px;z-index:40;display:flex;align-items:center;gap:8px;background:var(--gold);color:#14211B;border:none;border-radius:999px;padding:12px 18px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.3);cursor:pointer}
+:root:not([data-theme="light"]) .ask-fab{color:#14211B}
+.ask-fab svg{width:20px;height:20px}
+.ask-panel{position:fixed;bottom:calc(78px + env(safe-area-inset-bottom,0px));inset-inline-end:18px;z-index:41;width:min(420px,calc(100vw - 24px));height:min(600px,calc(100vh - 110px));background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.35);display:flex;flex-direction:column;overflow:hidden}
+.ask-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:var(--accent);color:var(--accent-ink)}
+.ask-head b{font-size:15px} .ask-head small{display:block;font-size:12px;opacity:.85}
+.ask-head .x{border-color:rgba(255,255,255,.4);color:inherit;width:32px;height:32px}
+.ask-log{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.ask-msg{max-width:92%;font-size:14px;line-height:1.5}
+.ask-msg p{margin:0 0 6px} .ask-msg p:last-child{margin-bottom:0}
+.ask-msg.me{align-self:flex-end;background:var(--accent);color:var(--accent-ink);padding:8px 12px;border-radius:14px 14px 4px 14px}
+.ask-msg.bot{align-self:flex-start;background:var(--bg);border:1px solid var(--line);padding:10px 12px;border-radius:14px 14px 14px 4px;width:92%}
+.ask-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.ask-chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 10px;font-size:12.5px;cursor:pointer;text-align:start}
+.ask-chip:hover,.ask-item:hover,.ask-inst:hover,.ask-ed:hover{border-color:var(--accent)}
+.ask-list{display:grid;gap:6px;margin-top:4px}
+.ask-item{display:grid;grid-template-columns:1fr auto;gap:0 8px;text-align:start;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:7px 10px;cursor:pointer}
+.ask-item b{font-size:13.5px} .ask-item span{grid-column:1;font-size:12px;color:var(--muted)} .ask-item em{grid-row:1/3;grid-column:2;align-self:center;font-style:normal;font-family:var(--f-data);font-size:12.5px}
+.ask-ol{margin:4px 0 0;padding-inline-start:20px;display:grid;gap:3px}
+.ask-ol b{font-family:var(--f-data);font-weight:500}
+.ask-inst{border:none;background:none;padding:0;color:var(--accent);cursor:pointer;text-align:start;font-weight:600}
+.ask-ul{list-style:none;margin:4px 0 8px;padding:0;display:grid;gap:4px;font-size:13px}
+.ask-ed{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:2px 8px;font-size:12px;font-weight:600;cursor:pointer;margin-inline-end:6px}
+.ask-card{display:grid;gap:2px;margin-bottom:8px} .ask-card span{font-size:12.5px;color:var(--muted)} .ask-card p{margin:6px 0 0}
+.ask-open{justify-self:start;background:var(--accent);color:var(--accent-ink);border:none;border-radius:8px;padding:6px 12px;font-weight:600;cursor:pointer}
+.ask-bars{display:grid;gap:4px;margin:6px 0}
+.ask-bars div{display:grid;grid-template-columns:86px 1fr 44px;align-items:center;gap:8px;font-size:12.5px}
+.ask-bars i{display:block;height:10px;border-radius:3px;background:var(--accent);min-width:2px}
+.ask-bars b{font-family:var(--f-data);font-weight:500;text-align:end}
+.ask-more{margin-top:8px!important;color:var(--muted);font-size:13px}
+.ask-form{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line)}
+.ask-form input{flex:1;min-width:0;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:10px 12px}
+.ask-form button{background:var(--accent);color:var(--accent-ink);border:none;border-radius:10px;padding:0 14px;font-weight:600;cursor:pointer}
+.ask-note{font-size:11px;color:var(--muted);padding:0 12px 8px}
+@media (max-width:520px){.ask-panel{inset-inline:8px;width:auto;bottom:74px;height:calc(100vh - 100px)}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -349,6 +386,14 @@ dialog::backdrop{background:rgba(8,14,11,.55)}
   </div>
 </dialog>
 
+
+<button class="ask-fab" id="askFab" type="button" aria-controls="askPanel" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span data-i="askFab"></span></button>
+<section class="ask-panel" id="askPanel" hidden aria-labelledby="askTitle">
+  <div class="ask-head"><div><b id="askTitle" data-i="askTitle"></b><small data-i="askSub"></small></div><button class="x" id="askClose" type="button" aria-label="Close">×</button></div>
+  <div class="ask-log" id="askLog" aria-live="polite"></div>
+  <form class="ask-form" id="askForm"><label for="askIn" class="sr" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)" data-i="askPh"></label><input id="askIn" autocomplete="off"><button type="submit" data-i="askSend"></button></form>
+  <div class="ask-note" data-i="askNote"></div>
+</section>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
@@ -448,6 +493,7 @@ const T = {
   instIntro:(n,top)=>`${n} Saudi institutions have at least one researcher in either list. ${top.inst} leads with ${top.n} researchers. Select an institution to see its researchers.`,
   lgBoth:'In the career-long list',lgOne:'Single-year {Y} list only',resShort:'researchers',showAll:n=>`Show all ${n} institutions`,
   pCert:'Certificate',pCard:'Share image',
+  askFab:'Ask the data',askTitle:'Ask the data',askSub:'Answers come from the lists on this page',askPh:'Ask a question',askSend:'Ask',askNote:'No AI is used. Questions stay on your device.',askHint:'e.g. How many researchers at KAUST in 2024?',
   sz_land:'X · LinkedIn · Facebook',sz_sq:'Instagram · square post',sz_pt:'Instagram portrait',sz_st:'Story · WhatsApp status',
   addPhoto:'Add your photo',rmPhoto:'Remove photo',photoNote:'Optional. Your photo is placed on the certificate and share image. It stays on your device and is never uploaded.',photoBad:'Please choose a JPG, PNG or WebP image under 15 MB.',
   dl:'Download certificate (PDF)',dlJpg:'Download certificate (JPEG)',dlCard:'Download share image',copy:'Copy record link',copied:'Link copied.',copyFail:'Copy the link below.',
@@ -486,6 +532,7 @@ const T = {
   instIntro:(n,top)=>`لدى ${n.toLocaleString('ar-SA')} مؤسسة سعودية باحث واحد على الأقل في إحدى القائمتين، وتتصدرها ${top.inst} بعدد ${top.n.toLocaleString('ar-SA')} باحثاً. اختر مؤسسة لعرض باحثيها.`,
   lgBoth:'في قائمة المسيرة البحثية',lgOne:'في قائمة {Y} فقط',resShort:'باحث',showAll:n=>`عرض جميع المؤسسات (${n.toLocaleString('ar-SA')})`,
   pCert:'الشهادة',pCard:'صورة للمشاركة',
+  askFab:'اسأل البيانات',askTitle:'اسأل البيانات',askSub:'الإجابات من القوائم في هذه الصفحة',askPh:'اكتب سؤالك',askSend:'اسأل',askNote:'لا يُستخدم ذكاء اصطناعي، وتبقى أسئلتك على جهازك.',askHint:'مثلاً: كم عدد الباحثين في جامعة جازان؟',
   sz_land:'إكس · لينكدإن · فيسبوك',sz_sq:'إنستغرام · منشور مربع',sz_pt:'إنستغرام · طولي',sz_st:'قصة · حالة واتساب',
   addPhoto:'أضف صورتك',rmPhoto:'إزالة الصورة',photoNote:'اختياري. تظهر صورتك على الشهادة وصورة المشاركة، وتبقى على جهازك ولا تُرفع إلى أي خادم.',photoBad:'اختر صورة بصيغة JPG أو PNG أو WebP بحجم أقل من 15 ميغابايت.',
   dl:'تحميل الشهادة (PDF)',dlJpg:'تحميل الشهادة (JPEG)',dlCard:'تحميل صورة المشاركة',copy:'نسخ رابط السجل',copied:'تم نسخ الرابط.',copyFail:'انسخ الرابط أدناه.',
@@ -807,11 +854,188 @@ $('copy').onclick = async () => {
   catch(e){ const lb=$('linkbox'); lb.hidden=false; lb.value=url; lb.select(); $('status').textContent=t('copyFail'); }
 };
 
+/* ---- Ask the data: a rule-based question box. No AI; every answer is computed from the lists in this page, in the visitor's browser ---- */
+const nq = s => norm(String(s||'').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))).replace(/[\u064B-\u065F\u0670]/g,'').replace(/[أإآٱ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي').replace(/ـ/g,'').replace(/\s+/g,' ').trim();
+const hasW = (q, k) => (' '+q+' ').includes(' '+k+' ');
+const INST_ALIAS = [
+  [['kaust','جامعه الملك عبدالله','جامعه الملك عبد الله','كاوست'],'king abdullah university of science and technology'],
+  [['kfupm','جامعه الملك فهد','جامعه البترول','البترول والمعادن'],'king fahd university of petroleum and minerals'],
+  [['ksu','جامعه الملك سعود'],'king saud university'],
+  [['kau','جامعه الملك عبدالعزيز','جامعه الملك عبد العزيز'],'king abdulaziz university'],
+  [['kku','جامعه الملك خالد'],'king khalid university'],
+  [['kfu','جامعه الملك فيصل'],'king faisal university'],
+  [['iau','جامعه الامام عبدالرحمن','جامعه الامام عبد الرحمن'],'imam abdulrahman bin faisal university'],
+  [['imsiu','جامعه الامام محمد بن سعود','جامعه الامام'],'imam mohammad ibn saud islamic university'],
+  [['pnu','جامعه الاميره نوره','نوره'],'princess nourah bint abdulrahman university'],
+  [['psau','جامعه الامير سطام','سطام'],'prince sattam bin abdulaziz university'],
+  [['psu','جامعه الامير سلطان'],'prince sultan university'],
+  [['pmu','جامعه الامير محمد بن فهد'],'prince mohammad bin fahd university'],
+  [['uqu','جامعه ام القري','ام القري'],'umm al qura university'],
+  [['جامعه جازان','جازان','jazan','jizan'],'jazan university'],
+  [['جامعه القصيم','القصيم','qassim'],'qassim university'],
+  [['جامعه الطائف','الطائف','taif'],'taif university'],
+  [['جامعه الجوف','الجوف','jouf'],'jouf university'],
+  [['جامعه تبوك','تبوك','tabuk'],'university of tabuk'],
+  [['جامعه نجران','نجران','najran'],'najran university'],
+  [['جامعه طيبه','طيبه','taibah'],'taibah university'],
+  [['جامعه حائل','حائل','hail'],'university of ha il'],
+  [['جامعه جده','جده','jeddah'],'university of jeddah'],
+  [['جامعه المجمعه','المجمعه','majmaah'],'majmaah university'],
+  [['جامعه الباحه','الباحه','baha'],'al baha university'],
+  [['جامعه بيشه','بيشه','bisha'],'university of bisha'],
+  [['جامعه الفيصل','alfaisal'],'alfaisal university'],
+  [['جامعه حفر الباطن','حفر الباطن'],'university of hafr al batin'],
+  [['الجامعه الاسلاميه'],'islamic university of madinah'],
+  [['مستشفي الملك فيصل التخصصي','التخصصي','kfshrc'],'king faisal specialist hospital'],
+  [['ارامكو','aramco'],'saudi arabian oil company'],
+  [['kacst','مدينه الملك عبدالعزيز للعلوم'],'king abdulaziz city for science and technology']
+].map(([k,t]) => [k.map(nq), t]);
+const GENERIC = new Set('university universiti of the king and college for science technology sciences medical research center centre hospital saudi arabia prince princess imam abdulaziz bin ibn al faculty school health institute company city islamic national'.split(' '));
+const INST_CUE = /universit|institut|hospital|college|centre|center|company|جامعه|مستشفي|كليه|مركز|مدينه/;
+const FIELD_KW = [
+  ['Public Health & Health Services',['public health','health services','الصحه العامه']],
+  ['Biomedical Research',['biomedical','الطبيه الحيويه','البحوث الطبيه']],
+  ['Clinical Medicine',['clinical medicine','clinical','medicine','الطب السريري','الطب']],
+  ['Chemistry',['chemistry','كيمياء','الكيمياء']],
+  ['Physics & Astronomy',['physics','astronomy','فيزياء','الفيزياء','الفلك']],
+  ['Information & Communication Technologies',['information','computer','computing','ict','artificial intelligence','حاسب','الحاسب','تقنيه المعلومات','الذكاء الاصطناعي','الاتصالات']],
+  ['Enabling & Strategic Technologies',['enabling','strategic technologies','التقنيات التمكينيه']],
+  ['Engineering',['engineering','هندسه','الهندسه']],
+  ['Mathematics & Statistics',['mathematics','math','maths','statistics','رياضيات','الرياضيات','احصاء','الاحصاء']],
+  ['Earth & Environmental Sciences',['environmental','environment','earth','بيئه','البيئه','علوم الارض']],
+  ['Agriculture, Fisheries & Forestry',['agriculture','agricultural','fisheries','زراعه','الزراعه']],
+  ['Economics & Business',['economics','business','اقتصاد','الاقتصاد','الاعمال']],
+  ['Built Environment & Design',['architecture','built environment','عماره','العماره']],
+  ['Biology',['biology','احياء','الاحياء']],
+  ['Social Sciences',['social sciences','العلوم الاجتماعيه']],
+  ['Psychology & Cognitive Sciences',['psychology','علم النفس']],
+  ['Communication & Textual Studies',['linguistics','communication studies','اللغويات']]
+].map(([f,k]) => [f, k.map(nq)]);
+const STOP = new Set(nq(`how many what which who whom is are was were the a an of in at on for to from and or me my show list give tell find search check please there any all number count researchers researcher scientists scientist people listed list lists top best highest leading most rank ranks ranking ranked position world version versions edition editions year data latest current this last career long single career-long single-year annual university universities institution institutions field fields subfield change changes trend trends growth grown over time since each every history compare comparison vs versus between with by than more less name named does do did has have had get got certificate my our ksa saudi arabia kingdom
+كم عدد من ما ماذا هل اين في من الي على عن و او كل اكثر افضل اعلي الاعلي ترتيب قائمه القائمه قائمة الباحثين باحث باحثا العلماء عالم الاصدار اصدار الاصدارات سنه عام المسيره البحثيه المسيره مسيره سنوي السنوي واحد جامعه الجامعات الجامعه مجال المجال التخصص تطور نمو منذ عبر السنوات مقارنه بين اسم اسمي موجود مدرج يوجد ابحث عن شهاده المملكه السعوديه السعودي`).split(' '));
+const allInstNames = [...new Set(Object.values(ALL).flat().map(p=>p.inst))];
+const instNQ = new Map(allInstNames.map(n=>[n, nq(n)]));
+const SUBS = [...new Set(Object.values(ALL).flat().flatMap(p=>[p.sub1]).filter(Boolean))];
+
+function findInst(q){
+  for (const [keys,target] of INST_ALIAS) if (keys.some(k => k.includes(' ') ? q.includes(k) : hasW(q,k))) return {target, used:keys};
+  const qt = new Set(q.split(' ')); let best=null, bs=0, bh=0;
+  for (const [name,n] of instNQ){ const toks=n.split(' ').filter(t=>t.length>2 && !GENERIC.has(t)); if(!toks.length) continue;
+    const hit=toks.filter(t=>qt.has(t)).length, sc=hit/toks.length;
+    if (hit && (sc>bs || (sc===bs && hit>bh))) { best=name; bs=sc; bh=hit; } }
+  if (best && bs>=0.5 && (bh>=2 || INST_CUE.test(q))) return {target: instNQ.get(best), used: instNQ.get(best).split(' ')};
+  return null;
+}
+function findField(q){
+  for (const s of SUBS){ const n=nq(s); if (n.length>4 && q.includes(n)) return {sub:s, used:n.split(' ')}; }
+  for (const [f,keys] of FIELD_KW) for (const k of keys) if (k.includes(' ') ? q.includes(k) : hasW(q,k)) return {field:f, used:k.split(' ')};
+  const qt=q.split(' ').filter(t=>t.length>=6);
+  for (const t of qt){ const hits=SUBS.filter(s=>nq(s).split(' ').includes(t)); if (hits.length===1) return {sub:hits[0], used:[t]}; }
+  return null;
+}
+function findVersion(q){
+  let m = q.match(/(?:^| )v ?([1-9])(?: |$)/) || q.match(/(?:version|edition|الاصدار|اصدار) ?([1-9])(?: |$)/);
+  if (m) return {v:+m[1], used:[m[0].trim()]};
+  m = q.match(/(?:^| )(20(?:1[7-9]|2[0-6]))(?: |$)/);
+  if (m){ const y=+m[1]; if (y===2026) return {v:9, used:[m[1]]};
+    const vs=EDITIONS.filter(v=>VERS[v].cy===y); if (vs.length) return {v:Math.max(...vs), used:[m[1]], year:y}; return {none:y, used:[m[1]]}; }
+  return null;
+}
+const isTrend = q => /trend|over time|since|growth|grow|change|history|each version|every version|all versions|across|تطور|نمو|منذ|عبر|كل الاصدارات|تغير/.test(q);
+const isCount = q => /how many|number of|count|كم|عدد/.test(q);
+const isTop = q => /(?:^| )(top|best|highest|leading)(?: |$)|افضل|اعلي|الاعلي|الاوائل/.test(q);
+const isInstRank = q => /(which|what|most|top|best|leading|largest|rank|ranking).*(universit|institution)|(universit|institution).*(most|ranking|rank)|اي جامعه|اكثر جامعه|اكثر الجامعات|افضل الجامعات|ترتيب الجامعات|الجامعات الاكثر/.test(q);
+const listOf = q => /career|المسيره|مسيره/.test(q) ? 'career' : /single|annual|one year|one-year|سنوي|عام واحد|السنه الواحده/.test(q) ? 'single' : '';
+
+const L = (en, ar) => lang==='ar' ? ar : en;
+const vLbl = v => L(`Version ${v} (${VERS[v].cy} data)`, `الإصدار ${v} (بيانات ${VERS[v].cy})`);
+const fLbl = f => f.field ? fieldName(f.field) : f.sub;
+function pool(v, inst, fld, lst){
+  return ALL[v].filter(p => (!inst || nq(p.inst).includes(inst.target)) && (!fld || (fld.field ? p.field===fld.field : (p.sub1===fld.sub))) && (!lst || p[lst]));
+}
+const instName = (v, inst) => { const hit = Object.values(ALL).flat().find(p=>nq(p.inst)===inst.target) || ALL[v].find(p=>nq(p.inst).includes(inst.target)) || Object.values(ALL).flat().find(p=>nq(p.inst).includes(inst.target)); return hit ? hit.inst : inst.target; };
+const personBtn = p => `<button type="button" class="ask-item" data-id="${p.id}"><b>${esc(p.display)}</b><span>${esc(p.inst)} · ${esc(fieldName(p.field))}</span><em>#${fmt(p.best)}</em></button>`;
+
+function answer(raw){
+  const q = nq(raw); if (!q) return help();
+  const ver = findVersion(q), inst = findInst(q), fld = findField(q), lst = listOf(q);
+  if (ver && ver.none) return L(`There is no version with ${ver.none} data. Data years available: ${EDITIONS.map(v=>VERS[v].cy).reverse().filter((y,i,a)=>a.indexOf(y)===i).join(', ')}.`, `لا يوجد إصدار لبيانات عام ${ver.none}. السنوات المتاحة: ${EDITIONS.map(v=>VERS[v].cy).reverse().filter((y,i,a)=>a.indexOf(y)===i).join('، ')}.`);
+  const v = ver ? ver.v : CV.v;
+  const used = new Set([...(ver?ver.used:[]).flatMap(x=>x.split(' ')), ...(inst?inst.used:[]).flatMap(x=>x.split(' ')), ...(fld?fld.used:[]).flatMap(x=>x.split(' '))]);
+  const resid = q.split(' ').filter(t => !STOP.has(t) && !used.has(t) && !/^\d+$/.test(t) && t.length>=3);
+  const latin = resid.filter(t=>/^[a-z]/.test(t));
+  // institutions ranking
+  if (isInstRank(q) && !inst){
+    const m=new Map(); for (const p of pool(v,null,fld,lst)) m.set(p.inst,(m.get(p.inst)||0)+1);
+    const top=[...m].sort((a,b)=>b[1]-a[1]).slice(0,10);
+    return `<p>${L(`Institutions with the most listed researchers in ${vLbl(v)}${fld?`, ${esc(fLbl(fld))}`:''}:`, `المؤسسات الأكثر باحثين مدرجين في ${vLbl(v)}${fld?`، ${esc(fLbl(fld))}`:''}:`)}</p><ol class="ask-ol">${top.map(([n,c])=>`<li><button type="button" class="ask-inst" data-inst="${esc(n)}" data-v="${v}">${esc(n)}</button> <b>${loc(c)}</b></li>`).join('')}</ol>`;
+  }
+  // a researcher's name
+  if (latin.length && !isInstRank(q)){
+    const all = Object.values(ALL).flat().filter(p => latin.every(t => p.idx.includes(t)));
+    if (all.length){
+      const seen=new Set(), groups=[];
+      for (const p of all.sort((a,b)=>b.v-a.v)){ if (seen.has(p.id)) continue; const eds=otherEditions(p); eds.forEach(e=>seen.add(e.p.id)); groups.push({p, eds}); }
+      if (groups.length>8) return L(`${groups.length} different researchers match “${esc(latin.join(' '))}”. Add a first name or family name to narrow it down.`, `يطابق «${esc(latin.join(' '))}» ${loc(groups.length)} باحثاً مختلفاً. أضف الاسم الأول أو اسم العائلة لتضييق البحث.`);
+      return groups.map(({p,eds}) => {
+        const rows = eds.map(e => { const r=e.p; return `<li><button type="button" class="ask-ed" data-id="${r.id}">V${e.v} · ${VERS[e.v].cy}</button> ${r.career?L('career-long','المسيرة')+' #'+fmt(r.career.rank):''}${r.career&&r.single?' · ':''}${r.single?L('single-year','سنوي')+' #'+fmt(r.single.rank):''}</li>`; }).join('');
+        return `<div class="ask-card"><b>${esc(p.display)}</b><span>${esc(p.inst)} · ${esc(fieldName(p.field))}</span><p>${L(`Listed in ${eds.length} version${eds.length>1?'s':''}:`, `مدرج في ${loc(eds.length)} ${eds.length>=3&&eds.length<=10?'إصدارات':'إصدار'}:`)}</p><ul class="ask-ul">${rows}</ul><button type="button" class="ask-open" data-id="${p.id}">${L('Open record and certificate','فتح السجل والشهادة')}</button></div>`;
+      }).join('');
+    }
+    if (!inst && !fld) return L(`No researcher matching “${esc(latin.join(' '))}” appears in any version among researchers in Saudi Arabia. Try the family name only, spelled as in Scopus.`, `لا يوجد باحث يطابق «${esc(latin.join(' '))}» في أي إصدار بين الباحثين في المملكة. جرّب اسم العائلة فقط كما يُكتب في سكوبس.`);
+  }
+  if (!inst && !fld && resid.some(t=>/[؀-ۿ]/.test(t)) && !isCount(q) && !isTop(q) && !isTrend(q))
+    return L('Names are recorded in English in the database. Please type the name in English, as it appears in Scopus.', 'الأسماء مسجلة باللغة الإنجليزية في قاعدة البيانات. اكتب الاسم بالإنجليزية كما يظهر في سكوبس.');
+  // trend across versions
+  if (isTrend(q) && !ver){
+    const rows = EDITIONS.slice().reverse().map(w => { const n=pool(w,inst,fld,lst).length; return {w,n}; });
+    const first = rows.find(r=>r.n>0), last = rows.at(-1);
+    const what = [inst?esc(instName(last.w,inst)):L('Saudi Arabia','المملكة'), fld?esc(fLbl(fld)):''].filter(Boolean).join(' · ');
+    const max = Math.max(...rows.map(r=>r.n),1);
+    return `<p>${L(`Listed researchers by version, ${what}:`, `عدد الباحثين المدرجين حسب الإصدار، ${what}:`)}</p><div class="ask-bars">${rows.map(r=>`<div><span>V${r.w} · ${VERS[r.w].cy}</span><i style="width:${r.n/max*100}%"></i><b>${loc(r.n)}</b></div>`).join('')}</div>${first&&first!==last?`<p>${L(`From ${loc(first.n)} in Version ${first.w} to ${loc(last.n)} in Version ${last.w}.`, `من ${loc(first.n)} في الإصدار ${first.w} إلى ${loc(last.n)} في الإصدار ${last.w}.`)}</p>`:''}`;
+  }
+  const P0 = pool(v,inst,fld,lst);
+  const scope = [inst?L(`at ${esc(instName(v,inst))}`, `في ${esc(instName(v,inst))}`):L('in Saudi Arabia','في المملكة'), fld?L(`in ${esc(fLbl(fld))}`, `في مجال ${esc(fLbl(fld))}`):''].filter(Boolean).join(' ');
+  const lstTxt = lst==='career'?L(' (career-long list)',' (قائمة المسيرة البحثية)'):lst==='single'?L(' (single-year list)',' (القائمة السنوية)'):'';
+  if (!P0.length) return L(`No listed researchers ${scope} in ${vLbl(v)}${lstTxt}.`, `لا يوجد باحثون مدرجون ${scope} في ${vLbl(v)}${lstTxt}.`);
+  const nC=P0.filter(p=>p.career).length, nS=P0.filter(p=>p.single).length, nB=P0.filter(p=>p.career&&p.single).length;
+  const countLine = `<p>${L(`In ${vLbl(v)}, <b>${loc(P0.length)}</b> researchers ${scope} are listed${lstTxt}: ${loc(nC)} career-long, ${loc(nS)} single-year, ${loc(nB)} in both.`, `في ${vLbl(v)}، يوجد <b>${loc(P0.length)}</b> باحثاً مدرجاً ${scope}${lstTxt}: ${loc(nC)} في قائمة المسيرة، و${loc(nS)} في القائمة السنوية، و${loc(nB)} في القائمتين.`)}</p>`;
+  const nTop = Math.min(+(q.match(/(?:^| )(\d{1,2})(?: |$)/)||[])[1] || 10, 50);
+  const topList = `<div class="ask-list">${P0.slice(0,nTop).map(personBtn).join('')}</div>`;
+  if (isCount(q) && !isTop(q)) return countLine + (inst||fld ? `<p class="ask-more">${L(`Top ${Math.min(5,P0.length)} by world rank:`, `أفضل ${loc(Math.min(5,P0.length))} حسب الترتيب العالمي:`)}</p><div class="ask-list">${P0.slice(0,5).map(personBtn).join('')}</div>` : '');
+  if (isTop(q) || inst || fld) return countLine + `<p class="ask-more">${L(`Top ${Math.min(nTop,P0.length)} by world rank:`, `أفضل ${loc(Math.min(nTop,P0.length))} حسب الترتيب العالمي:`)}</p>` + topList;
+  if (isCount(q)) return countLine;
+  return help(true);
+}
+const EXAMPLES = () => lang==='ar'
+  ? ['كم عدد الباحثين في جامعة جازان؟','تطور جامعة الملك سعود عبر السنوات','أفضل 10 في الكيمياء','أي جامعة لديها أكثر الباحثين؟','Abdelwahab']
+  : ['How many researchers at Jazan University?','Is Siddig Abdelwahab listed?','Top 10 in Chemistry in 2024','Which university has the most researchers?','KAUST growth over time'];
+function help(notUnderstood){
+  return `<p>${notUnderstood?L('I could not match that question to the data. ',''+'لم أتمكن من مطابقة السؤال مع البيانات. '):''}${L('Ask about a researcher, an institution, a field or a version. For example:','اسأل عن باحث أو مؤسسة أو مجال أو إصدار. مثلاً:')}</p><div class="ask-chips">${EXAMPLES().map(e=>`<button type="button" class="ask-chip">${esc(e)}</button>`).join('')}</div>`;
+}
+function askPost(role, html){
+  const m=document.createElement('div'); m.className='ask-msg '+role; m.innerHTML=html; $('askLog').appendChild(m); $('askLog').scrollTop=$('askLog').scrollHeight;
+}
+function ask(text){
+  if(!text.trim()) return; askPost('me', esc(text));
+  let out; try { out = answer(text); } catch(e){ console.error(e); out = L('Something went wrong with that question. Please rephrase it.','حدث خطأ في معالجة السؤال. أعد صياغته من فضلك.'); }
+  askPost('bot', out);
+}
+function askReset(){ $('askLog').innerHTML=''; askPost('bot', `<p>${L('Ask me about the lists. Answers come straight from the data on this page.','اسألني عن القوائم. الإجابات من البيانات الموجودة في هذه الصفحة مباشرة.')}</p>` + help().replace(/^<p>.*?<\/p>/,'')); }
+$('askFab').onclick = () => { const open = $('askPanel').hidden; $('askPanel').hidden = !open; $('askFab').setAttribute('aria-expanded', open); if (open){ if(!$('askLog').children.length) askReset(); $('askIn').focus(); } };
+$('askClose').onclick = () => { $('askPanel').hidden = true; $('askFab').setAttribute('aria-expanded', false); $('askFab').focus(); };
+$('askForm').addEventListener('submit', e => { e.preventDefault(); const v=$('askIn').value; $('askIn').value=''; ask(v); });
+$('askLog').addEventListener('click', e => {
+  const c=e.target.closest('.ask-chip'); if(c){ ask(c.textContent); return; }
+  const b=e.target.closest('[data-id]'); if(b){ location.hash=b.dataset.id; return; }
+  const i=e.target.closest('.ask-inst'); if(i){ if(+i.dataset.v!==CV.v) setVersion(+i.dataset.v); $('q').value=''; $('fList').value=''; $('fField').value=''; $('fInst').value=i.dataset.inst; filter(); location.hash='directory'; }
+});
+
 /* ---- language apply ---- */
 function applyLang(){
   document.documentElement.lang=lang; document.documentElement.dir=t('dir');
   document.querySelectorAll('[data-i]').forEach(el=>{ const v=t(el.dataset.i); if(typeof v==='string') el.innerHTML=v; });
-  $('lang').textContent=t('other'); $('q').placeholder=t('ph');
+  $('lang').textContent=t('other'); $('q').placeholder=t('ph'); $('askIn').placeholder=t('askHint'); if($('askLog') && $('askLog').children.length===1) askReset();
   $('dl').textContent=t('dl'); $('dlJpg').textContent=t('dlJpg'); $('dlCard').textContent=t('dlCard'); $('copy').textContent=t('copy');
   const nC=P.filter(p=>p.career).length, nS=P.filter(p=>p.single).length;
   $('stats').innerHTML=[[P.length,t('sResearchers')],[nC,t('sCareer')],[nS,t('sSingle')],[league.length,t('sInst')]]
